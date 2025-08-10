@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROBSINY Cell King System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e6f0ff;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #1a73e8;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #1a73e8;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1557b0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #1a73e8;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ROBSINY Cell King System Management</h1>
+
+    <!-- Customer Page -->
+    <section id="customer">
+      <h2>Customer Page</h2>
+      <form id="customerForm">
+        <div class="form-group">
+          <label for="scoutName">Scout Name</label>
+          <input type="text" id="scoutName" required>
+        </div>
+        <div class="form-group">
+          <label for="customerName">Customer Name</label>
+          <input type="text" id="customerName" required>
+        </div>
+        <div class="form-group">
+          <label for="customerNumber">Customer Number</label>
+          <input type="text" id="customerNumber" required>
+        </div>
+        <div class="form-group">
+          <label for="serviceType">Service Type</label>
+          <select id="serviceType" required>
+            <option value="screen_replacement">Screen Replacement</option>
+            <option value="charging_port">Charging Port</option>
+            <option value="back_glass">Back Glass</option>
+            <option value="screen_charging_port">Screen and Charging Port</option>
+            <option value="screen_back_glass">Screen and Back Glass</option>
+            <option value="complete_flex">Complete Flex</option>
+            <option value="screen_charging_back">Screen, Charging Port, and Back Glass</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="screenModel">Screen Model</label>
+          <input type="text" id="screenModel" required>
+        </div>
+        <div class="form-group">
+          <label for="price">Price (ZMW)</label>
+          <input type="number" id="price" required>
+        </div>
+        <div class="form-group">
+          <label for="availability">Availability</label>
+          <input type="text" id="availability" readonly>
+        </div>
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" required>
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </div>
+        <button type="submit">Add Record</button>
+      </form>
+      <table id="customerTable">
+        <thead>
+          <tr>
+            <th>Scout Name</th>
+            <th>Customer Name</th>
+            <th>Customer Number</th>
+            <th>Service Type</th>
+            <th>Screen Model</th>
+            <th>Price (ZMW)</th>
+            <th>Availability</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Customer records will be added here dynamically -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Stock Page -->
+    <section id="stock">
+      <h2>Stock Page</h2>
+      <form id="stockForm">
+        <div class="form-group">
+          <label for="newScreenModel">Screen Model</label>
+          <input type="text" id="newScreenModel" required>
+        </div>
+        <div class="form-group">
+          <label for="quantity">Quantity</label>
+          <input type="number" id="quantity" required>
+        </div>
+        <button type="submit">Add to Stock</button>
+      </form>
+      <table id="stockTable">
+        <thead>
+          <tr>
+            <th>Screen Model</th>
+            <th>Quantity</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Stock records will be added here dynamically -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Expense Page -->
+    <section id="expense">
+      <h2>Expense Page</h2>
+      <form id="expenseForm">
+        <div class="form-group">
+          <label for="expenseDescription">Description</label>
+          <input type="text" id="expenseDescription" required>
+        </div>
+        <div class="form-group">
+          <label for="expenseAmount">Amount (ZMW)</label>
+          <input type="number" id="expenseAmount" required>
+        </div>
+        <button type="submit">Add Expense</button>
+      </form>
+      <table id="expenseTable">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Amount (ZMW)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Expense records will be added here dynamically -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Reports Page -->
+    <section id="reports">
+      <h2>Reports Page</h2>
+      <p>Total Sales: <span id="totalSales">0</span> ZMW</p>
+      <p>Total Expenses: <span id="totalExpenses">0</span> ZMW</p>
+      <p>Net Profit: <span id="netProfit">0</span> ZMW</p>
+    </section>
+  </div>
+
+  <script>
+    // Data storage
+    let customers = [];
+    let stock = [];
+    let expenses = [];
+
+    // Customer Form
+    document.getElementById('customerForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const screenModel = document.getElementById('screenModel').value;
+      const serviceType = document.getElementById('serviceType').value;
+      const availability = checkAvailability(screenModel) ? 'In' : 'Out';
+      const customer = {
+        scoutName: document.getElementById('scoutName').value,
+        customerName: document.getElementById('customerName').value,
+        customerNumber: document.getElementById('customerNumber').value,
+        serviceType: serviceType,
+        screenModel: screenModel,
+        price: parseFloat(document.getElementById('price').value),
+        availability: availability,
+        status: document.getElementById('status').value
+      };
+      customers.push(customer);
+
+      // Subtract screen quantity if service is screen replacement
+      if (serviceType === 'screen_replacement' && availability === 'In') {
+        subtractStock(screenModel);
+      }
+
+      updateCustomerTable();
+      updateStockTable();
+      updateReports();
+      e.target.reset();
+    });
+
+    // Stock Form
+    document.getElementById('stockForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const item = {
+        screenModel: document.getElementById('newScreenModel').value,
+        quantity: parseInt(document.getElementById('quantity').value)
+      };
+      stock.push(item);
+      updateStockTable();
+      e.target.reset();
+    });
+
+    // Expense Form
+    document.getElementById('expenseForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const expense = {
+        description: document.getElementById('expenseDescription').value,
+        amount: parseFloat(document.getElementById('expenseAmount').value)
+      };
+      expenses.push(expense);
+      updateExpenseTable();
+      updateReports();
+      e.target.reset();
+    });
+
+    // Check Availability
+    function checkAvailability(screenModel) {
+      const item = stock.find(item => item.screenModel === screenModel);
+      return item && item.quantity > 0;
+    }
+
+    // Subtract Stock
+    function subtractStock(screenModel) {
+      const item = stock.find(item => item.screenModel === screenModel);
+      if (item && item.quantity > 0) {
+        item.quantity -= 1;
+      }
+    }
+
+    // Update Customer Table
+    function updateCustomerTable() {
+      const tbody = document.getElementById('customerTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      customers.forEach((customer, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${customer.scoutName}</td>
+          <td>${customer.customerName}</td>
+          <td>${customer.customerNumber}</td>
+          <td>${customer.serviceType}</td>
+          <td>${customer.screenModel}</td>
+          <td>${customer.price}</td>
+          <td>${customer.availability}</td>
+          <td>${customer.status}</td>
+          <td><button onclick="deleteCustomer(${index})">Delete</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Update Stock Table
+    function updateStockTable() {
+      const tbody = document.getElementById('stockTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      stock.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.screenModel}</td>
+          <td>${item.quantity}</td>
+          <td><button onclick="deleteStock(${index})">Delete</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Update Expense Table
+    function updateExpenseTable() {
+      const tbody = document.getElementById('expenseTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      expenses.forEach((expense, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${expense.description}</td>
+          <td>${expense.amount}</td>
+          <td><button onclick="deleteExpense(${index})">Delete</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Update Reports
+    function updateReports() {
+      const totalSales = customers.reduce((sum, customer) => sum + customer.price, 0);
+      const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+      const netProfit = totalSales - totalExpenses;
+      document.getElementById('totalSales').textContent = totalSales;
+      document.getElementById('totalExpenses').textContent = totalExpenses;
+      document.getElementById('netProfit').textContent = netProfit;
+    }
+
+    // Delete Customer
+    function deleteCustomer(index) {
+      customers.splice(index, 1);
+      updateCustomerTable();
+      updateReports();
+    }
+
+    // Delete Stock
+    function deleteStock(index) {
+      stock.splice(index, 1);
+      updateStockTable();
+    }
+
+    // Delete Expense
+    function deleteExpense(index) {
+      expenses.splice(index, 1);
+      updateExpenseTable();
+      updateReports();
+    }
+  </script>
+</body>
+</html>
